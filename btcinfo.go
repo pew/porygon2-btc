@@ -35,7 +35,9 @@ func btcInfo(command *bot.Cmd, matches []string) (msg string, err error) {
 		return "", err
 	}
 
-	return fmt.Sprint("1 BTC:", currency.USD.Symbol, currency.USD.Last, "-", currency.EUR.Symbol, currency.EUR.Last), nil
+	formatString := "1 BTC: %s %f - %s %f"
+
+	return fmt.Sprintf(formatString, currency.USD.Symbol, currency.USD.Last, currency.EUR.Symbol, currency.EUR.Last), nil
 }
 
 func init() {

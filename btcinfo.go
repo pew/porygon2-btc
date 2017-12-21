@@ -23,7 +23,7 @@ func btcInfo(command *bot.Cmd, matches []string) (msg string, err error) {
 	resp, err := http.Get("https://blockchain.info/ticker")
 	if err != nil {
 		log.Println(err)
-		return
+		return "", err
 	}
 	defer resp.Body.Close()
 
@@ -32,7 +32,7 @@ func btcInfo(command *bot.Cmd, matches []string) (msg string, err error) {
 
 	if err := dec.Decode(&currency); err != nil {
 		log.Println(err)
-		return
+		return "", err
 	}
 
 	return fmt.Sprint("1 BTC:", currency.USD.Symbol, currency.USD.Last, "-", currency.EUR.Symbol, currency.EUR.Last), nil

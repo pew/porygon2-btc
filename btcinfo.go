@@ -8,19 +8,15 @@ import (
 	"github.com/0x263b/porygon2"
 )
 
-type Currency struct {
-	USD struct {
-		Last float64
-		Symbol string
-	}
-	EUR struct {
-		Last float64
-		Symbol string
-	}
+type btcInfo []struct {
+	Id string
+	Symbol string
+	PriceUsd float64 `json:"price_usd,string"`
+	PriceEur float64 `json:"price_eur,string"`
 }
 
 func btcInfo(command *bot.Cmd, matches []string) (msg string, err error) {
-	resp, err := http.Get("https://blockchain.info/ticker")
+	resp, err := http.Get("https://api.coinmarketcap.com/v1/ticker/?convert=EUR")
 	if err != nil {
 		log.Println(err)
 		return "", err
@@ -28,19 +24,29 @@ func btcInfo(command *bot.Cmd, matches []string) (msg string, err error) {
 	defer resp.Body.Close()
 
 	dec := json.NewDecoder(resp.Body)
-	var currency Currency
+	var currencies btcInfo
 
-	if err := dec.Decode(&currency); err != nil {
+	if err := dec.Decode(&currencies); err != nil {
 		log.Println(err)
 		return "", err
 	}
 
-	formatString := "1 BTC: %s %.2f - %s %.2f"
+	var output string
+	formatString := "%s: $%.2f / %.2f€ - "
 
-	return fmt.Sprintf(formatString, currency.USD.Symbol, currency.USD.Last, currency.EUR.Symbol, currency.EUR.Last), nil
+	for _, v := range currencies {
+		// we could do better here. 2018 (TM)
+		if v.Id == "bitcoin" || v.Id == "ethereum" || v.Id == "monero" {
+			output += fmt.Sprintf(formatString, v.Symbol, v.PriceUsd, v.PriceEur)
+		}
+	}
+
+	// help
+	output = output[:len(output)-3]
+	return fmt.Sprintf(output), nil
 }
 
 func init() {
-	bot.RegisterCommand("^btc$", btcInfo)
-	log.Println("btc plugin loaded")
+	bot.RegisterCommand("^coin$", btcInfo)
+	log.Println("cryptocoin plugin loaded")
 }

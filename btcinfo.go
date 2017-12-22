@@ -8,7 +8,7 @@ import (
 	"github.com/0x263b/porygon2"
 )
 
-type btcInfo []struct {
+type coins []struct {
 	Id string
 	Symbol string
 	PriceUsd float64 `json:"price_usd,string"`
@@ -24,7 +24,7 @@ func btcInfo(command *bot.Cmd, matches []string) (msg string, err error) {
 	defer resp.Body.Close()
 
 	dec := json.NewDecoder(resp.Body)
-	var currencies btcInfo
+	var currencies coins
 
 	if err := dec.Decode(&currencies); err != nil {
 		log.Println(err)
@@ -36,7 +36,7 @@ func btcInfo(command *bot.Cmd, matches []string) (msg string, err error) {
 
 	for _, v := range currencies {
 		// we could do better here. 2018 (TM)
-		if v.Id == "bitcoin" || v.Id == "ethereum" || v.Id == "monero" {
+		if v.Id == "bitcoin" || v.Id == "ethereum" || v.Id == "monero" || v.Id == "bitcoin-cash" {
 			output += fmt.Sprintf(formatString, v.Symbol, v.PriceUsd, v.PriceEur)
 		}
 	}

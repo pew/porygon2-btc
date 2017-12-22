@@ -6,11 +6,14 @@ import (
 	"net/http"
 	"log"
 	"github.com/0x263b/porygon2"
+	"sort"
+	"strings"
 )
 
 type coins []struct {
 	Id string
 	Symbol string
+	Name string
 	PriceUsd float64 `json:"price_usd,string"`
 	PriceEur float64 `json:"price_eur,string"`
 }
@@ -31,19 +34,18 @@ func btcInfo(command *bot.Cmd, matches []string) (msg string, err error) {
 		return "", err
 	}
 
-	var output string
-	formatString := "%s: $%.2f / %.2f€ - "
+	var output []string
+	formatString := "%s: $%.2f / %.2f€"
 
 	for _, v := range currencies {
 		// we could do better here. 2018 (TM)
-		if v.Id == "bitcoin" || v.Id == "ethereum" || v.Id == "monero" || v.Id == "bitcoin-cash" {
-			output += fmt.Sprintf(formatString, v.Symbol, v.PriceUsd, v.PriceEur)
+		if v.Name == "Bitcoin" || v.Name == "Bitcoin Cash" || v.Name == "Ethereum" || v.Name == "Monero" {
+			output = append(output, fmt.Sprintf(formatString, v.Symbol, v.PriceUsd, v.PriceEur))
 		}
 	}
 
-	// help
-	output = output[:len(output)-3]
-	return fmt.Sprintf(output), nil
+	sort.Strings(output)
+	return fmt.Sprintf(strings.Join(output, " - ")), nil
 }
 
 func init() {

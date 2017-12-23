@@ -39,7 +39,7 @@ func btcInfo(command *bot.Cmd, matches []string) (msg string, err error) {
 
 	for _, v := range currencies {
 		// we could do better here. 2018 (TM)
-		if v.Name == "Bitcoin" || v.Name == "Bitcoin Cash" || v.Name == "Ethereum" || v.Name == "Monero" {
+		if v.Name == "Bitcoin" || v.Name == "Bitcoin Cash" || v.Name == "Ethereum" || v.Name == "Monero" || v.Name == "IOTA" {
 			output = append(output, fmt.Sprintf(formatString, v.Symbol, v.PriceUsd, v.PriceEur))
 		}
 	}
